@@ -15,13 +15,16 @@ class CreateTemperaturesTable extends Migration
     {
         Schema::create('temperatures', function (Blueprint $table) {
             $table->id();
-            $table->integer('day');
-            $table->integer('min');
-            $table->integer('max');
-            $table->integer('night');
-            $table->integer('eve');
-            $table->integer('morn');
-            $table->timestamps();
+            $table->integer('date')->index();
+            $table->integer('day')->index();
+            $table->integer('min')->index();
+            $table->integer('max')->index();
+            $table->integer('night')->index();
+            $table->integer('eve')->index();
+            $table->integer('morn')->index();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
+            $table->foreignId('city_id')->constrained();
             $table->foreignId('daily_forecast_id')->constrained();
         });
     }

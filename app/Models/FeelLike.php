@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class FeelLike extends Model
 {
     use HasFactory;
+
+    protected $guarded = false;
 }

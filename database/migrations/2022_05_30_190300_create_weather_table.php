@@ -15,10 +15,15 @@ class CreateWeatherTable extends Migration
     {
         Schema::create('weather', function (Blueprint $table) {
             $table->id();
-            $table->string('main');
+            $table->integer('third_party_id')->index();
+            $table->integer('date')->index();
+            $table->string('main')->index();
             $table->string('description');
+            $table->string('type')->index();
             $table->string('icon');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
+            $table->foreignId('city_id')->constrained();
             $table->foreignId('daily_forecast_id')->constrained();
         });
     }

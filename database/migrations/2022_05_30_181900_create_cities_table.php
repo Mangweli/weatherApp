@@ -15,29 +15,20 @@ class CreateCitiesTable extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('latlong');
-            $table->timestamps();
+            $table->string('name')->unique()->index();
+            $table->string('lat');
+            $table->string('lon');
+            $table->string('created_by');
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
         });
 
         DB::Table('cities')
             ->insert([
-                        [
-                            'name' => 'New York',
-                            'latlong' => '40.730610, -73.935242'
-                        ],
-                        [
-                            'name' => 'London',
-                            'latlong' => '51.509865, -0.118092'
-                        ],
-                        [
-                            'name' => 'Berlin',
-                            'latlong' => '52.520008, 13.404954'
-                        ],
-                        [
-                            'name' => 'Tokyo',
-                            'latlong' => '35.652832, 139.839478'
-                        ]
+                        ['name' => 'New York', 'lat' => '40.730610', 'lon' => '-73.935242', 'created_by' => 'system'],
+                        ['name' => 'London', 'lat' => '51.509865', 'lon' => '-0.118092', 'created_by' => 'system'],
+                        ['name' => 'Berlin', 'lat' => '52.520008', 'lon' => '13.404954', 'created_by' => 'system'],
+                        ['name' => 'Tokyo', 'lat' => '35.652832','lon' => '139.839478', 'created_by' => 'system']
                     ]);
     }
 

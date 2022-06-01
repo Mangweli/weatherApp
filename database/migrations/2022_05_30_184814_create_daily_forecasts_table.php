@@ -15,22 +15,24 @@ class CreateDailyForecastsTable extends Migration
     {
         Schema::create('daily_forecasts', function (Blueprint $table) {
             $table->id();
-            $table->integer('date');
-            $table->integer('sunrise');
-            $table->integer('sunset');
-            $table->integer('moonrise');
-            $table->integer('moonset');
-            $table->integer('moon_phase');
-            $table->integer('pressure');
-            $table->integer('humidity');
-            $table->integer('dew_point');
-            $table->integer('wind_speed');
-            $table->integer('wind_deg');
-            $table->integer('wind_gust');
-            $table->integer('clouds');
-            $table->integer('pop');
-            $table->integer('uvi');
-            $table->timestamps();
+            $table->integer('dt')->index();
+            $table->integer('sunrise')->index();
+            $table->integer('sunset')->index();
+            $table->integer('moonrise')->index();
+            $table->integer('moonset')->index();
+            $table->integer('moon_phase')->index();
+            $table->integer('pressure')->index();
+            $table->integer('humidity')->index();
+            $table->integer('dew_point')->index();
+            $table->integer('wind_speed')->index();
+            $table->integer('wind_deg')->index();
+            $table->integer('wind_gust')->index();
+            $table->integer('clouds')->index();
+            $table->integer('pop')->index();
+            $table->integer('rain')->index();
+            $table->integer('uvi')->index();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
             $table->foreignId('city_id')->constrained();
         });
     }

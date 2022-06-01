@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class DailyForecast extends Model
 {
     use HasFactory;
+
+    protected $guarded = false;
 }
