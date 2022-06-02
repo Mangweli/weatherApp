@@ -29,7 +29,7 @@ class CreateDailyForecastsTable extends Migration
             $table->integer('wind_gust')->index();
             $table->integer('clouds')->index();
             $table->integer('pop')->index();
-            $table->integer('rain')->index();
+            $table->integer('rain')->nullable()->index();
             $table->integer('uvi')->index();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();

@@ -10,19 +10,30 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DailyForcastEvent
+class DailyForecastEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $dailyForecast;
+    public $feelLike;
+    public $temp;
+    public $weather;
+    public $cityId;
+    public $dailyForecastID;
+    public $date;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($dailyForecast)
+    public function __construct($feelLike, $temp, $weather, $cityId, $dailyForecastID, $date)
     {
-        $this->dailyForecast = $dailyForecast;
+        $this->feelLike        = $feelLike;
+        $this->temp            = $temp;
+        $this->weather         = $weather;
+        $this->cityId          = $cityId;
+        $this->dailyForecastID = $dailyForecastID;
+        $this->date            = $date;
     }
 
     /**

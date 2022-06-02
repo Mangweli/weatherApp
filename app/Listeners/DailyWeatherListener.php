@@ -2,7 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Event\DailyForcastEvent;
+use App\Event\DailyForecastEvent;
+use App\Jobs\CityDailyWeatherJob;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -24,8 +25,8 @@ class DailyWeatherListener
      * @param  \App\Event\DailyForcastEvent  $event
      * @return void
      */
-    public function handle(DailyForcastEvent $event)
+    public function handle(DailyForecastEvent $event)
     {
-        //
+        CityDailyWeatherJob::dispatch($event->weather, $event->date, $event->cityId, $event->dailyForecastID);
     }
 }

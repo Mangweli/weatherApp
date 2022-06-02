@@ -17,17 +17,19 @@ class CityDailyFeelLikeJob implements ShouldQueue
     private $feelLike;
     private $date;
     private $city_id;
+    private $daily_forecast_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($feelLike, $date, $city_id)
+    public function __construct($feelLike, $date, $city_id, $forecast_id)
     {
-        $this->feelLike = $feelLike;
-        $this->date     = $date;
-        $this->city_id  = $city_id;
+        $this->feelLike          = $feelLike;
+        $this->date              = $date;
+        $this->city_id           = $city_id;
+        $this->daily_forecast_id = $forecast_id;
     }
 
     /**
@@ -39,14 +41,16 @@ class CityDailyFeelLikeJob implements ShouldQueue
     {
         if(is_array($this->feelLike)) {
             foreach($this->feelLike as $feelLikeValue) {
-                $feelLikeValue->date    = $this->date;
-                $feelLikeValue->city_id = $this->city_id;
+                $feelLikeValue->date              = $this->date;
+                $feelLikeValue->city_id           = $this->city_id;
+                $feelLikeValue->daily_forecast_id = $this->daily_forecast_id;
 
-               $dailyForecastRepository->setFeelLike((array)$feelLikeValue);
+                $dailyForecastRepository->setFeelLike((array)$feelLikeValue);
             }
         }else {
-            $this->feelLike->date    = $this->date;
-            $this->feelLike->city_id = $this->city_id;
+            $this->feelLike->date              = $this->date;
+            $this->feelLike->city_id           = $this->city_id;
+            $this->feelLike->daily_forecast_id = $this->daily_forecast_id;
 
             $dailyForecastRepository->setFeelLike((array)$this->feelLike);
         }

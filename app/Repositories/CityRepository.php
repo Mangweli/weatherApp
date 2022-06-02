@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\City;
 use App\Repositories\Interfaces\CityInterface;
 
-class CityRepositories implements CityInterface
+class CityRepository implements CityInterface
 {
     public function getCities() {
 
