@@ -10,4 +10,12 @@ class FeelLike extends Model
     use HasFactory;
 
     protected $guarded = false;
+
+    public function city() {
+        return $this->belongsTo(City::class);
+    }
+
+    public function dailyForecast() {
+        return $this->belongsTo(DailyForecast::class);
+    }
 }

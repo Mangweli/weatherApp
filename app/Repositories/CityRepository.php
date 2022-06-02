@@ -7,11 +7,18 @@ use App\Repositories\Interfaces\CityInterface;
 
 class CityRepository implements CityInterface
 {
-    public function getCities() {
-
+    public function getCities($paginate) : object {
+        return City::paginate($paginate);
     }
 
-    public function getSystemCities() :array {
+    public function getCitiesByID(array $city_ids) : array {
+        return City::select('id', 'name', 'lat', 'lon')
+                    ->whereIn('id', $city_ids)
+                    ->get()
+                    ->toArray();
+    }
+
+    public function getSystemCities() : array {
        return City::where('created_by', 'system')->get()->toArray();
     }
 
