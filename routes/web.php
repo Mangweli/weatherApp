@@ -18,5 +18,3 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', [DailyForecastController::class, 'getForecast']);
-Route::get('/test2', [DailyForecastController::class, 'getDailyWeather']);

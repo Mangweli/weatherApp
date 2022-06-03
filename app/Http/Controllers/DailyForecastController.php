@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Event\DailyForecastEvent;
-use App\Jobs\CityDailyFeelLikeJob;
-use App\Models\City;
-use App\Models\DailyForecast;
 use App\Repositories\Interfaces\CityInterface;
 use App\Repositories\Interfaces\DailyForecastInterface;
 use Carbon\Carbon;
@@ -42,7 +38,7 @@ class DailyForecastController extends Controller
         $from = strtotime(Carbon::parse($request->get('date'))->startOfDay());
         $to   = strtotime(Carbon::parse($request->get('date'))->endOfDay());
 
-        try {
+       // try {
             $dailyForecast  = $this->dailyForecastRepository->getDailyForecastByDate($from, $to);
 
             if(!empty($dailyForecast)) {
@@ -69,13 +65,13 @@ class DailyForecastController extends Controller
             }
 
             return response()->json($results, 404);
-        } catch (\Throwable $th) {
-            Log::error($th);
+        // } catch (\Throwable $th) {
+        //     Log::error($th);
 
-            $results['message'] = 'Unable to process your request';
+        //     $results['message'] = 'Unable to process your request';
 
-            return response()->json($results);
-        }
+        //     return response()->json($results);
+        // }
 
     }
 
@@ -124,6 +120,7 @@ class DailyForecastController extends Controller
             $results['message'] = 'Invalid or missing date';
             return response()->json($results, 404);
         }
+
         $from = strtotime(Carbon::parse($request->get('date'))->startOfDay());
         $to   = strtotime(Carbon::parse($request->get('date'))->endOfDay());
 
@@ -157,8 +154,10 @@ class DailyForecastController extends Controller
             $results['message'] = 'Invalid or missing date';
             return response()->json($results, 404);
         }
+
         $from = strtotime(Carbon::parse($request->get('date'))->startOfDay());
         $to   = strtotime(Carbon::parse($request->get('date'))->endOfDay());
+
         try {
             $dailyFeellike  = $this->dailyForecastRepository->getDailyFeellikeByDate($from, $to);
 

@@ -44,6 +44,6 @@ class DailyForecastCommand extends Command
     public function handle()
     {
         $cities       = $this->cityRepository->getSystemCities();
-        $this->getDailyForecast($cities, strtotime(Carbon::today()));
+        $this->getDailyForecastByDate($cities, strtotime(Carbon::today()));
     }
 }
