@@ -21,16 +21,20 @@ class CityRepository implements CityInterface
     public function getSystemCities() : array {
        return City::where('created_by', 'system')->get()->toArray();
     }
+    /**
+     *
+     * TODO::ADD MORE CITY FUNCTIONALITIES
+     */
 
-    public function getSpecificCity(string $name) {
+    // public function getSpecificCity(string $name) {
 
-    }
+    // }
 
-    public function setCity(int $city_id, array $city_data) {
+    // public function setCity(int $city_id, array $city_data) {
 
-    }
+    // }
 
-    public function setNewCity(array $city_data) {
+    // public function setNewCity(array $city_data) {
 
-    }
+    // }
 }

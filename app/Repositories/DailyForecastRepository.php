@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\City;
 use App\Models\DailyForecast;
 use App\Models\FeelLike;
 use App\Models\Temperature;
@@ -48,23 +47,38 @@ class DailyForecastRepository implements DailyForecastInterface
         return  $dailyWeather;
     }
 
-    public function getDailyForecastByCity($from, $to) {
-         City::with([
-                'dailyForecast'  => function($query) {
-                    $query->select('id', 'dt as date', 'sunrise', 'sunset', 'moonrise', 'moonset', 'moon_phase', 'pressure', 'humidity', 'dew_point', 'wind_speed', 'wind_deg', 'wind_gust', 'clouds', 'pop', 'rain', 'uvi', 'city_id');
-                },
-                'dailyFeellike' => function($query) {
-                        $query->select('day', 'night', 'eve', 'morn', 'daily_forecast_id');
-                },
-                'dailyWeather' => function($query) {
-                    $query->select('main', 'description', 'icon', 'daily_forecast_id');
-                },
-                'dailyTemp' => function($query) {
-                        $query->select('id', 'day', 'min', 'max', 'night', 'eve', 'morn', 'daily_forecast_id');
-                },
-                ])
-                ->get()
-                ->toArray();
+
+    public function getDailyWeatherByDate($from, $to) {
+        return Weather::with(['city' => function($query) {
+                                    $query->select('id','name', 'lat', 'lon');
+                                }
+                            ])
+                        ->whereBetween('date', [$from, $to])
+                        ->select('id','date', 'main', 'description', 'icon', 'city_id')
+                        ->get()
+                        ->toArray();
+    }
+
+    public function getDailyTempByDate($from, $to) {
+        return Temperature::with(['city' => function($query) {
+                                        $query->select('id','name', 'lat', 'lon');
+                                    }
+                                ])
+                            ->whereBetween('date', [$from, $to])
+                            ->select('id', 'day', 'min', 'max', 'night', 'eve', 'morn', 'city_id')
+                            ->get()
+                            ->toArray();
+    }
+
+    public function getDailyFeellikeByDate($from, $to) {
+        return FeelLike::with(['city' => function($query) {
+                            $query->select('id','name', 'lat', 'lon');
+                                }
+                            ])
+                        ->whereBetween('date', [$from, $to])
+                        ->select('id', 'day', 'night', 'eve', 'morn', 'city_id')
+                        ->get()
+                        ->toArray();
     }
 
     public function setDailyForecast($dailyForecastData) {
