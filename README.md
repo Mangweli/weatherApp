@@ -110,7 +110,7 @@ docker-compose exec -T weather-app php artisan test or docker-compose exec -T we
 ```
 ## Running the App
 
-<p>The app will be live on 127.0.0.1:8100</p>
+<p>The app will be live on 127.0.0.1:8081</p>
 <p>This can be accessed through any  browsers or any api simulation app</p>
 
 ## Crons
