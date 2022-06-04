@@ -28,7 +28,8 @@ class DailyForecastRepository implements DailyForecastInterface
     }
 
     public function getDailyForecastByDate($from, $to) {
-        $dailyForecast = DailyForecast::with([
+        $dailyForecast = Cache::remember('dailyForecast', Carbon::now()->addHours(6), function() use($from, $to) {
+            return DailyForecast::with([
                                             'city' => function($query) {
                                                 $query->select('id','name', 'lat', 'lon');
                                             },
@@ -46,12 +47,13 @@ class DailyForecastRepository implements DailyForecastInterface
                                 ->select('id', 'dt as date', 'sunrise', 'sunset', 'moonrise', 'moonset', 'moon_phase', 'pressure', 'humidity', 'dew_point', 'wind_speed', 'wind_deg', 'wind_gust', 'clouds', 'pop', 'rain', 'uvi', 'city_id')
                                 ->get()
                                 ->toArray();
+        });
         return  $dailyForecast;
     }
 
 
     public function getDailyWeatherByDate($from, $to) {
-        $dailyWeather = Cache::remember('dailyWeather', Carbon::now()->addMinute(), function() use($from, $to) {
+        $dailyWeather = Cache::remember('dailyWeather', Carbon::now()->addHours(6), function() use($from, $to) {
             return Weather::with(['city' => function($query) {
                                     $query->select('id','name', 'lat', 'lon');
                                 }
@@ -66,7 +68,7 @@ class DailyForecastRepository implements DailyForecastInterface
     }
 
     public function getDailyTempByDate($from, $to) {
-        $dailyTemp = Cache::remember('dailyTemp', Carbon::now()->addMinute(), function() use($from, $to) {
+        $dailyTemp = Cache::remember('dailyTemp', Carbon::now()->addHours(6), function() use($from, $to) {
             return Temperature::with(['city' => function($query) {
                                         $query->select('id','name', 'lat', 'lon');
                                     }
@@ -81,7 +83,7 @@ class DailyForecastRepository implements DailyForecastInterface
     }
 
     public function getDailyFeellikeByDate($from, $to) {
-        $dailyFeelLike = Cache::remember('dailyFeelLike', Carbon::now()->addMinute(), function() use($from, $to) {
+        $dailyFeelLike = Cache::remember('dailyFeelLike', Carbon::now()->addHours(6), function() use($from, $to) {
             return FeelLike::with(['city' => function($query) {
                             $query->select('id','name', 'lat', 'lon');
                                 }
