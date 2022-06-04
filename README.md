@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to PromoCode Rest API 👋</h1>
+<h1 align="center">Welcome to Weather Forecast App 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1-blue.svg?cacheSeconds=2592000" />
   <a href="https://documenter.getpostman.com/view/1825277/UVsHUoN4" target="_blank">
@@ -116,6 +116,24 @@ docker-compose exec -T weather-app php artisan test or docker-compose exec -T we
 ## Crons
 
 <p>A cron will be running every six hours to retrieve data from the external api and save them to our local database</p>
+
+
+## Setting up scheduler
+
+<p>This is already take care of if you are deploying with docker</p>
+<p>If you are deploying outside docker, follow the below instructions</p>
+<p>If running locally, on a different terminal Run the command</p>
+
+```sh
+php artisan schedule:work 
+
+```
+
+<p>If running on a server and a cron configuration on the crontab</p>
+
+```sh
+* * * * * php /var/www/Blogging-platform/artisan schedule:run 1>> /dev/null 2>&1
+```
 
 ## Cache data
 
