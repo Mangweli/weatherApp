@@ -126,7 +126,6 @@ class DailyForecastTest extends TestCase
 
     public function test_daily_forecast_all_end_point_returns_data_from_db_if_exits()
     {
-        $this->withoutExceptionHandling();
         DailyForecast::factory()->create();
         $this->assertEquals(1, DailyForecast::count());
 
@@ -138,22 +137,6 @@ class DailyForecastTest extends TestCase
                                 [
                                     'success' => true,
                                     'source' => 'Internal'
-                            ]);
-    }
-
-    public function test_daily_forecast_all_end_point_returns_error_message_if_no_data_found()
-    {
-        $this->assertDatabaseCount('daily_forecasts', 0);
-
-        $response = $this->get('/api/v1/daily-forecast/all?date=1990-06-03');
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['success', 'source', 'message']);
-        $response->assertJson(
-                                [
-                                    'success' => false,
-                                    'source' => false,
-                                    'message' => 'No data Available'
                             ]);
     }
 
@@ -195,32 +178,64 @@ class DailyForecastTest extends TestCase
     }
 
     public function test_can_saves_daily_weather_details_to_db_successfully() {
-        $from   = strtotime(Carbon::now()->startOfDay());
-        $cities = $this->cityRepository->getSystemCities();
-        $this->assertEquals(0, Weather::count());
 
-        $dailyForecast = $this->getDailyForecastByDate($cities, $from);
+        $cities        = $this->cityRepository->getSystemCities();
+        $dailyForecast = DailyForecast::factory()->create();
+
+        $this->assertEquals(0, Weather::count());
+        $weather = [
+            'third_party_id'    => 1,
+            'date'              => $dailyForecast->dt,
+            'main'              => 1,
+            'description'       => 'Cloudy',
+            'type'              => 'Cloudy',
+            'icon'              => 'ad',
+            'city_id'           => $cities[0]['id'],
+            'daily_forecast_id' => $dailyForecast->id
+        ];
+
         $this->assertNotEmpty($dailyForecast);
+        $this->dailyForecastRepository->setWeather($weather);
         $this->assertNotEquals(0, Weather::count());
     }
 
     public function test_can_saves_daily_temp_details_to_db_successfully() {
-        $from   = strtotime(Carbon::now()->startOfDay());
         $cities = $this->cityRepository->getSystemCities();
+        $dailyForecast = DailyForecast::factory()->create();
         $this->assertEquals(0, Temperature::count());
+        $temp = [
+            'date'  => $dailyForecast->dt,
+            'day'   => '2',
+            'min'   => '3',
+            'max'   => '4',
+            'night' => '5',
+            'eve'   => '5',
+            'morn'  => '6',
+            'city_id' => $cities[0]['id'],
+            'daily_forecast_id' => $dailyForecast->id
+        ];
 
-        $dailyForecast = $this->getDailyForecastByDate($cities, $from);
         $this->assertNotEmpty($dailyForecast);
+        $this->dailyForecastRepository->setTemp($temp);
         $this->assertNotEquals(0, Temperature::count());
     }
 
     public function test_can_saves_daily_feel_like_details_to_db_successfully() {
-        $from   = strtotime(Carbon::now()->startOfDay());
         $cities = $this->cityRepository->getSystemCities();
+        $dailyForecast = DailyForecast::factory()->create();
         $this->assertEquals(0, FeelLike::count());
+        $feellike = [
+            'date'  => $dailyForecast->dt,
+            'day'   => '2',
+            'night' => '5',
+            'eve'   => '5',
+            'morn'  => '6',
+            'city_id' => $cities[0]['id'],
+            'daily_forecast_id' => $dailyForecast->id
+        ];
 
-        $dailyForecast = $this->getDailyForecastByDate($cities, $from);
         $this->assertNotEmpty($dailyForecast);
+        $this->dailyForecastRepository->setFeelLike($feellike);
         $this->assertNotEquals(0, FeelLike::count());
     }
 
@@ -231,7 +246,7 @@ class DailyForecastTest extends TestCase
         $this->assertEquals($cityFromModel, sizeof($cities));
     }
 
-    public function test_can_retrieve_data_from_API() {
+    public function test_can_retrieve_data_from_the_weather_api() {
         $city               = $this->cityRepository->getSystemCities()[0];
         $payload['lat']     = $city['lat'];
         $payload['lon']     = $city['lon'];

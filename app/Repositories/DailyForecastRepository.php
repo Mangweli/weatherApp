@@ -28,8 +28,7 @@ class DailyForecastRepository implements DailyForecastInterface
     }
 
     public function getDailyForecastByDate($from, $to) {
-        $dailyForecast = Cache::remember('dailyForecast', Carbon::now()->addMinute(), function() use($from, $to) {
-            return DailyForecast::with([
+        $dailyForecast = DailyForecast::with([
                                             'city' => function($query) {
                                                 $query->select('id','name', 'lat', 'lon');
                                             },
@@ -47,7 +46,6 @@ class DailyForecastRepository implements DailyForecastInterface
                                 ->select('id', 'dt as date', 'sunrise', 'sunset', 'moonrise', 'moonset', 'moon_phase', 'pressure', 'humidity', 'dew_point', 'wind_speed', 'wind_deg', 'wind_gust', 'clouds', 'pop', 'rain', 'uvi', 'city_id')
                                 ->get()
                                 ->toArray();
-        });
         return  $dailyForecast;
     }
 

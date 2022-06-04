@@ -62,7 +62,7 @@ class CityDailyWeatherJob implements ShouldQueue
 
             unset($this->weather->id);
 
-            $dailyForecastRepository->setTemp((array)$this->weather);
+            $dailyForecastRepository->setWeather((array)$this->weather);
         }
     }
 }

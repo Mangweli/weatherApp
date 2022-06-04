@@ -60,7 +60,6 @@ class DailyForecastController extends Controller
                     $results['source']  = 'External';
                     $results['message'] = $dailyForecast;
                 }
-
                 return response()->json($results, 200);
             }
 
