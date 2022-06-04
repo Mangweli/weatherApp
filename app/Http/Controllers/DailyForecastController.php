@@ -38,7 +38,7 @@ class DailyForecastController extends Controller
         $from = strtotime(Carbon::parse($request->get('date'))->startOfDay());
         $to   = strtotime(Carbon::parse($request->get('date'))->endOfDay());
 
-       // try {
+        try {
             $dailyForecast  = $this->dailyForecastRepository->getDailyForecastByDate($from, $to);
 
             if(!empty($dailyForecast)) {
@@ -65,13 +65,13 @@ class DailyForecastController extends Controller
             }
 
             return response()->json($results, 404);
-        // } catch (\Throwable $th) {
-        //     Log::error($th);
+        } catch (\Throwable $th) {
+            Log::error($th);
 
-        //     $results['message'] = 'Unable to process your request';
+            $results['message'] = 'Unable to process your request';
 
-        //     return response()->json($results);
-        // }
+            return response()->json($results);
+        }
 
     }
 
