@@ -1,0 +1,132 @@
+version: "3"
+services:
+  #PHP SERVICE
+    weather-app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        # command: bash -c "composer install &&  php artisan key:generate && php artisan migrate && php artisan optimize && php-fpm"
+        image: weather-app
+        container_name: weather-app
+        restart: unless-stopped
+        tty: true
+        environment:
+            SERVICE_NAME: app
+            SERVICE_TAG: dev
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+            - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        networks:
+            - app-network
+        depends_on:
+            - weather-mysql-db
+
+    weather-queue-worker:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: 'php artisan queue:work'
+        image: weather-queue-worker
+        container_name: weather-queue-worker
+        restart: unless-stopped
+        volumes:
+            - ./:/var/www
+            - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        depends_on:
+            - weather-cron
+        networks:
+            - app-network
+
+    weather-cron:
+        build:
+            context: .
+            dockerfile: cron.Dockerfile
+        container_name: weather-cron
+        volumes:
+        - ./:/var/www
+        depends_on:
+            - weather-app
+        networks:
+            - app-network
+
+#NGINX WEBESRVER
+    weather-nginx:
+        image: nginx:alpine
+        container_name: weather-nginx
+        restart: unless-stopped
+        tty: true
+        ports:
+            - 8081:80
+            - 4431:443
+        volumes:
+            - ./:/var/www
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+        depends_on:
+            - weather-redis
+        networks:
+            - app-network
+
+#MYSQL SERVICE
+    weather-mysql-db:
+        image: mysql:8.0.27
+        container_name: weather-mysql-db
+        restart: unless-stopped
+        tty: true
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            SERVICE_NAME: mysql
+            SERVICE_TAG: dev
+        volumes:
+            - dbdata:/var/lib/mysql-files
+            - ./mysql/my.cnf:/etc/mysql/my.cnf
+        depends_on:
+            - weather-nginx
+        networks:
+            - app-network
+
+#RABBIT MQ
+    weather-rabbitmq:
+        image: rabbitmq:3-management-alpine
+        container_name: weather-rabbitmq
+        environment:
+            RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+        ports:
+            - 5672:5672
+            - 15672:15672
+        volumes:
+            - rabbitmqdata:/var/lib/rabbitmq/
+        networks:
+            - app-network
+#REDIS
+    weather-redis:
+        image: redis:alpine
+        container_name: weather-redis
+        #command: ['redis-server', '--bind','0.0.0.0','--requirepass', 'testes','--port','6379']
+        ports:
+            - 6379:6379
+        volumes:
+            - redisdata:/data
+        depends_on:
+            - weather-rabbitmq
+        networks:
+            - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+#Volumes
+volumes:
+    dbdata:
+        driver: local
+    rabbitmqdata:
+        driver: local
+    redisdata:
+        driver: local
+

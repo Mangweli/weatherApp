@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Event\DailyForecastEvent;
+use App\Jobs\CityDailyFeelLikeJob;
+use App\Jobs\CityDailyTempJob;
+use App\Jobs\CityDailyWeatherJob;
 use App\Listeners\DailyFeelLikeListener;
 use App\Listeners\DailyTempListener;
 use App\Listeners\DailyWeatherListener;
@@ -19,6 +22,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use App\Traits\UtilityFunctions;
+use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class DailyForecastTest extends TestCase
@@ -220,8 +224,38 @@ class DailyForecastTest extends TestCase
         $this->assertNotEquals(0, FeelLike::count());
     }
 
-    public function test_can_retrieve_data_from_API() {
+    public function test_can_retrieve_system_cities() {
+        $cityFromModel = City::where('created_by','system')->count();
+        $cities = $this->cityRepository->getSystemCities();
 
+        $this->assertEquals($cityFromModel, sizeof($cities));
+    }
+
+    public function test_can_retrieve_data_from_API() {
+        $city               = $this->cityRepository->getSystemCities()[0];
+        $payload['lat']     = $city['lat'];
+        $payload['lon']     = $city['lon'];
+        $payload['dt']      = strtotime(Carbon::now()->startOfDay());
+        $payload['appid']   = Config::get('settings.WEATHER_FORECAST_APPID');
+        $payload['exclude'] = 'minutely';
+        $url                = Config::get('settings.WEATHER_FORECAST_API_URL').'?'.http_build_query($payload);
+
+        $forecastData   = $this->dailyForecastRepository->getForecastFromAPI($url);
+
+        $this->assertNotEquals(0, sizeof((array)$forecastData));
+    }
+
+    public function test_daily_weather_forecast_are_queued_for_processing() {
+        Queue::fake();
+
+        $from   = strtotime(Carbon::now()->startOfDay());
+        $cities = $this->cityRepository->getSystemCities();
+
+        $this->getDailyForecastByDate($cities, $from);
+
+        Queue::assertPushed(CityDailyTempJob::class);
+        Queue::assertPushed(CityDailyWeatherJob::class);
+        Queue::assertPushed(CityDailyFeelLikeJob::class);
     }
 
 
